@@ -7,14 +7,22 @@ import requests
 import os
 
 SUPABASE_URL = os.environ.get('SUPABASE_URL', 'https://ryewzzdytcehcizcqshc.supabase.co')
-SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5ZXd6emR5dGNlaGNpemNxc2hjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MTU5MjgsImV4cCI6MjA5NjQ5MTkyOH0.MpvvZc4wgX_M4dF4KvPBlVr98sRHbivjaY3HgBRZZ90')
+SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip()
 
-def _headers(service_role=False):
+def _headers():
+    """
+    Build server-side Supabase headers.
+
+    The service-role key must be stored in the deployment environment and
+    must never be committed to source control or exposed in browser code.
+    """
+    if not SUPABASE_SERVICE_ROLE_KEY:
+        raise RuntimeError("Missing SUPABASE_SERVICE_ROLE_KEY environment variable.")
     return {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': f'Bearer {SUPABASE_ANON_KEY}',
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
+        "apikey": SUPABASE_SERVICE_ROLE_KEY,
+        "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+        "Content-Type": "application/json",
+        "Prefer": "return=representation",
     }
 
 def _url(table):
