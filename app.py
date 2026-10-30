@@ -1,11 +1,16 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, session
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 import supabase_client as db
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'lux-salon-finder-super-secret-key-2026')
+app.secret_key = os.environ.get("SECRET_KEY")
+if not app.secret_key:
+    raise RuntimeError("Set SECRET_KEY in your local .env file or deployment environment.")
 
 # ── SESSION-BASED AUTH ────────────────────────────────────────────────────────
 # We use Flask session instead of Flask-Login to avoid SQLAlchemy dependency.
